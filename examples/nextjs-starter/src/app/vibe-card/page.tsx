@@ -9,26 +9,35 @@ import {
 } from "./useVibeCardMappers";
 import { useVanaData } from "@opendatalabs/connect/react";
 
-const services: { id: ServiceType; label: string; author: string }[] = [
+const services: {
+  id: ServiceType;
+  label: string;
+  author: string;
+  desc: string;
+}[] = [
   {
     id: "spotify",
     label: "Sonic Landscape Analysis",
-    author: "Spotify Connector",
+    author: "Spotify Protocol",
+    desc: "Analyzes recent listening history, genre overlap, and tempo preferences to determine your foundational sonic frequency and emotional polarity.",
   },
   {
     id: "chatgpt",
     label: "Neural Construct Diagnostics",
     author: "OpenAI Interface",
+    desc: "Processes interaction logs and prompt structures to map your cognitive architecture, curiosity vectors, and generalized mind palace.",
   },
   {
     id: "linkedin",
     label: "Professional Graph Optimization",
     author: "LinkedIn Protocol",
+    desc: "Evaluates network topology, endorsement density, and career velocity to synthesize your current operational grind and corporate synergy.",
   },
   {
     id: "instagram",
     label: "Visual Aesthetic Indexing",
     author: "Meta Scraper",
+    desc: "Ingests photographic metadata, color palettes, and engagement ratios to compute a definitive visual aesthetic and curation index.",
   },
 ];
 
@@ -44,7 +53,7 @@ function ServiceItem({
   onDataFetched,
   dateString,
 }: {
-  service: { id: ServiceType; label: string; author: string };
+  service: { id: ServiceType; label: string; author: string; desc: string };
   onDataFetched: (id: ServiceType, data: Record<string, unknown>) => void;
   dateString: string;
 }) {
@@ -77,8 +86,8 @@ function ServiceItem({
             {service.label}
           </h3>
           <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-            Data payload successfully retrieved and securely stored. Identity
-            nodes aligned for synthesis.
+            Data payload successfully retrieved and securely stored locally.
+            Identity nodes aligned for synthesis.
           </p>
           <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
             <span>{dateString}</span>
@@ -106,8 +115,8 @@ function ServiceItem({
             {service.label}
           </h3>
           <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-            Connection requested. Please authorize the gateway to construct your
-            identity receipt.
+            Connection requested. Please authorize the secure gateway to grant
+            access to your data nodes.
           </p>
           <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
             <span>{dateString}</span>
@@ -136,8 +145,7 @@ function ServiceItem({
           {service.label}
         </h3>
         <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-          Initialize oracle connection to fetch fragmented identity records for
-          the Vibe Card synthesis engine.
+          {service.desc}
         </p>
         <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
           <span>{dateString}</span>
@@ -182,56 +190,27 @@ export default function VibeCardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
       {/* Top Header Navigation */}
-      <header className="w-full max-w-[1200px] px-6 py-8 flex flex-col md:flex-row md:items-center justify-between">
+      <header className="w-full max-w-[1200px] px-6 py-8 flex flex-col md:flex-row md:items-center justify-between border-b border-border">
         <div className="flex items-center gap-3 mb-6 md:mb-0">
-          <div className="w-8 h-8">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
-                className="fill-paradigm-green"
-              />
-              <path
-                d="M12 2L2 7V17"
-                stroke="black"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M22 7L12 12V22"
-                stroke="black"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M12 12L2 7"
-                stroke="black"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          <div className="w-8 h-8 relative">
+            <div className="absolute inset-0 border-2 border-foreground rotate-45 transform transition-transform hover:rotate-90 duration-500"></div>
+            <div className="absolute inset-2 bg-paradigm-green"></div>
           </div>
           <span className="font-serif text-2xl font-bold tracking-tight">
-            VibeCard
+            Vibe Protocol
           </span>
         </div>
 
         <nav className="flex gap-6 sm:gap-8 font-mono text-xs font-bold uppercase tracking-wider text-muted">
-          <span className="cursor-pointer hover:text-foreground">About</span>
-          <span className="cursor-pointer hover:text-foreground">Team</span>
           <span className="cursor-pointer hover:text-foreground">
-            Portfolio
+            Manifesto
           </span>
-          <span className="text-paradigm-green">Writing</span>
           <span className="cursor-pointer hover:text-foreground">
-            Open Source
+            Architecture
           </span>
+          <span className="cursor-pointer hover:text-foreground">Network</span>
+          <span className="text-paradigm-green">Synthesis</span>
+          <span className="cursor-pointer hover:text-foreground">SDK</span>
         </nav>
       </header>
 
@@ -240,38 +219,50 @@ export default function VibeCardPage() {
         {/* Left Sidebar (Sticky) */}
         <aside className="w-full lg:w-48 flex-shrink-0 font-mono text-xs font-bold uppercase tracking-wider space-y-4 text-muted hidden lg:block sticky top-12 self-start">
           <div className="mb-8 text-foreground pb-2 border-b border-border">
-            CONNECTIONS
+            DATA SOURCES
           </div>
           <div className="hover:text-foreground cursor-pointer transition-colors text-paradigm-green">
-            Oracles
+            Active Oracles
           </div>
           <div className="hover:text-foreground cursor-pointer transition-colors">
-            Synthesis
+            Archived Vaults
           </div>
           <div className="hover:text-foreground cursor-pointer transition-colors">
-            Records
+            Permissions
           </div>
           <div className="hover:text-foreground cursor-pointer transition-colors">
-            News
+            Export Logs
           </div>
         </aside>
 
         {/* Right Content */}
         <div className="flex-grow w-full max-w-3xl">
+          <div className="mb-16 font-serif">
+            <h1 className="text-5xl font-normal tracking-tight mb-6 leading-tight">
+              Cryptographic Identity Synthesis via Multi-Oracle Ingestion
+            </h1>
+            <p className="text-lg text-foreground/80 leading-relaxed max-w-2xl">
+              Connect disparate Web2 data silos to generate a sovereign, unified
+              digital personality receipt. The Vibe Protocol computes emotional
+              polarity, cognitive structure, and visual aesthetics from raw
+              authorized payloads.
+            </p>
+          </div>
+
           {/* Identity Receipt Top Block (If Generated) */}
           {vibeCard && (
             <div className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 pb-2 border-b border-border text-foreground">
-                GENERATED IDENTIFIER
+                GENERATED IDENTIFIER (VIBE CARD)
               </h2>
 
               <div className="border border-border p-8 sm:p-12 mb-8 bg-gray-50 font-serif">
                 <h1 className="text-4xl sm:text-5xl font-normal tracking-tight mb-8 font-serif leading-tight">
-                  Cryptographic Synthesis of Digital Provenance
+                  Definitive Resonance Profile
                 </h1>
                 <p className="text-sm font-mono text-muted uppercase tracking-wider border-b border-border pb-8 mb-8">
-                  {currentDate} <span className="text-border mx-2">|</span> By
-                  The VibeCard Protocol
+                  {currentDate} <span className="text-border mx-2">|</span> ID:{" "}
+                  {Math.random().toString(36).substring(2, 10).toUpperCase()}
                 </p>
 
                 <div className="space-y-6">
@@ -295,7 +286,7 @@ export default function VibeCardPage() {
 
           {/* Section Heading */}
           <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-2 pb-2 border-b border-border text-foreground">
-            {vibeCard ? "AVAILABLE CONNECTIONS" : "FEATURED PROTOCOLS"}
+            {vibeCard ? "AVAILABLE CONNECTIONS" : "ORACLE ENDPOINTS"}
           </h2>
 
           {/* List of Services */}
@@ -311,7 +302,7 @@ export default function VibeCardPage() {
           </div>
 
           {/* Generate Button Area Styled like "All Writing" Search Box */}
-          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 mt-16 text-foreground">
+          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 mt-16 text-foreground border-t border-border pt-12">
             RECEIPT GENERATION
           </h2>
 
@@ -319,13 +310,13 @@ export default function VibeCardPage() {
             {linkedCount >= 2 ? (
               <button
                 onClick={handleGenerate}
-                className="w-full text-center py-4 px-6 border border-border bg-white text-foreground font-mono text-sm uppercase tracking-widest hover:border-paradigm-green hover:text-paradigm-green transition-colors focus:outline-none focus:ring-1 focus:ring-paradigm-green"
+                className="w-full text-center py-5 px-6 border border-paradigm-green bg-paradigm-green text-white font-sans font-medium text-lg tracking-wide hover:bg-paradigm-green/90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-paradigm-green rounded-sm"
               >
-                Synthesize Receipt
+                Synthesize Vibe Card
               </button>
             ) : (
-              <div className="w-full text-center py-4 px-6 border border-border bg-gray-50 text-muted font-mono text-sm uppercase tracking-widest opacity-60">
-                Awaiting minimum protocol synchronization (2)
+              <div className="w-full text-center py-5 px-6 border border-border bg-gray-50 text-muted font-sans font-medium text-lg tracking-wide opacity-60 rounded-sm">
+                Awaiting minimum protocol synchronization (2 Data Sources)
               </div>
             )}
           </div>
