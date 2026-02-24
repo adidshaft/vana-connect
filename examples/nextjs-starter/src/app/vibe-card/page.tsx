@@ -9,19 +9,44 @@ import {
 } from "./useVibeCardMappers";
 import { useVanaData } from "@opendatalabs/connect/react";
 
-const services: { id: ServiceType; label: string }[] = [
-  { id: "spotify", label: "SPOTIFY" },
-  { id: "chatgpt", label: "CHATGPT" },
-  { id: "linkedin", label: "LINKEDIN" },
-  { id: "instagram", label: "INSTAGRAM" },
+const services: { id: ServiceType; label: string; author: string }[] = [
+  {
+    id: "spotify",
+    label: "Sonic Landscape Analysis",
+    author: "Spotify Connector",
+  },
+  {
+    id: "chatgpt",
+    label: "Neural Construct Diagnostics",
+    author: "OpenAI Interface",
+  },
+  {
+    id: "linkedin",
+    label: "Professional Graph Optimization",
+    author: "LinkedIn Protocol",
+  },
+  {
+    id: "instagram",
+    label: "Visual Aesthetic Indexing",
+    author: "Meta Scraper",
+  },
 ];
 
-function ServiceButton({
+function formatDate(date: Date) {
+  const mo = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(date);
+  const da = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(date);
+  const ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(date);
+  return `${mo}.${da}.${ye}`;
+}
+
+function ServiceItem({
   service,
   onDataFetched,
+  dateString,
 }: {
-  service: { id: ServiceType; label: string };
+  service: { id: ServiceType; label: string; author: string };
   onDataFetched: (id: ServiceType, data: Record<string, unknown>) => void;
+  dateString: string;
 }) {
   const { status, data, connectUrl, initConnect, isLoading, isConnected } =
     useVanaData({
@@ -35,45 +60,97 @@ function ServiceButton({
     }
   }, [data, service.id, onDataFetched]);
 
-  // If already linked/approved
+  // Connected State
   if (isConnected || status === "approved") {
     return (
-      <button
-        disabled
-        className="w-full py-4 border border-pureblack rounded-none bg-pureblack text-offwhite uppercase font-bold"
-      >
-        {service.label} LINKED
-      </button>
+      <div className="flex gap-6 py-8 border-b border-border group">
+        <div className="hidden sm:block w-48 h-32 bg-gray-50 border border-border flex-shrink-0 relative overflow-hidden flex flex-col justify-end p-4 grayscale bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]">
+          <div className="absolute top-0 right-0 w-8 h-8 bg-paradigm-green text-white flex items-center justify-center font-mono text-xs">
+            ✓
+          </div>
+          <div className="text-xl font-serif text-muted font-bold opacity-30">
+            {service.id.toUpperCase()}
+          </div>
+        </div>
+        <div className="flex flex-col flex-grow">
+          <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors">
+            {service.label}
+          </h3>
+          <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
+            Data payload successfully retrieved and securely stored. Identity
+            nodes aligned for synthesis.
+          </p>
+          <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
+            <span>{dateString}</span>
+            <span className="text-border">|</span>
+            <span>By {service.author}</span>
+            <span className="ml-auto text-paradigm-green bg-green-50 px-2 py-1">
+              Linked
+            </span>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  // If session is ready, we need the user to click to open the auth window
+  // Waiting to authorize (link generated)
   if (connectUrl && status === "waiting") {
     return (
-      <a
-        href={connectUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full py-4 border border-pureblack rounded-none text-pureblack bg-transparent hover:bg-black/5 text-center uppercase font-bold"
+      <div
+        className="flex gap-6 py-8 border-b border-border group cursor-pointer"
+        onClick={() => window.open(connectUrl, "_blank")}
       >
-        AUTHORIZE {service.label}
-      </a>
+        <div className="hidden sm:block w-48 h-32 bg-gray-50 border border-border flex-shrink-0 flex items-center justify-center bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]"></div>
+        <div className="flex flex-col flex-grow">
+          <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors">
+            {service.label}
+          </h3>
+          <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
+            Connection requested. Please authorize the gateway to construct your
+            identity receipt.
+          </p>
+          <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
+            <span>{dateString}</span>
+            <span className="text-border">|</span>
+            <span>By {service.author}</span>
+            <button className="ml-auto hover:text-paradigm-green transition-colors text-foreground group-hover:underline">
+              Proceed to Gateway →
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  // Initial connect button (or connecting state)
+  // Default state / Loading
   return (
-    <button
+    <div
+      className={`flex gap-6 py-8 border-b border-border group ${isLoading || status === "connecting" ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
       onClick={() => {
-        void initConnect();
+        if (!isLoading && status !== "connecting") void initConnect();
       }}
-      disabled={isLoading || status === "connecting"}
-      className="w-full py-4 border border-pureblack rounded-none transition-colors uppercase font-bold text-pureblack bg-transparent hover:bg-black/5 disabled:opacity-50"
     >
-      {isLoading || status === "connecting"
-        ? "CONNECTING..."
-        : `CONNECT ${service.label}`}
-    </button>
+      <div className="hidden sm:block w-48 h-32 bg-white border border-border flex-shrink-0 flex items-center justify-center transition-colors group-hover:bg-gray-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]"></div>
+      <div className="flex flex-col flex-grow">
+        <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors delay-75">
+          {service.label}
+        </h3>
+        <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
+          Initialize oracle connection to fetch fragmented identity records for
+          the Vibe Card synthesis engine.
+        </p>
+        <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
+          <span>{dateString}</span>
+          <span className="text-border">|</span>
+          <span>By {service.author}</span>
+          <span className="ml-auto font-mono text-foreground hover:text-paradigm-green transition-colors font-bold group-hover:underline">
+            {isLoading || status === "connecting"
+              ? "Connecting..."
+              : "Initialize"}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -82,6 +159,8 @@ export default function VibeCardPage() {
   const [vibeCard, setVibeCard] = useState<VibeCardTraits | null>(null);
   const { mapVibeData } = useVibeCardMappers();
 
+  const currentDate = formatDate(new Date());
+
   const handleDataFetched = (
     serviceId: ServiceType,
     data: Record<string, unknown>,
@@ -89,92 +168,169 @@ export default function VibeCardPage() {
     console.log(`[Vana live payload for ${serviceId}]:`, data);
     setAggregatedData((prev) => ({
       ...prev,
-      [serviceId]: data[serviceId] || data, // data comes from the specific scope config
+      [serviceId]: data[serviceId] || data,
     }));
   };
 
   const handleGenerate = () => {
     setVibeCard(mapVibeData(aggregatedData));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const linkedCount = Object.keys(aggregatedData).length;
 
   return (
-    <div className="min-h-screen bg-offwhite text-pureblack font-mono p-8 flex flex-col items-center">
-      <div className="w-full max-w-2xl border border-pureblack rounded-none">
-        {/* Header */}
-        <header className="border-b border-pureblack p-6">
-          <h1 className="text-3xl font-bold uppercase tracking-tighter">
-            The Ultimate Vibe Card
-          </h1>
-          <p className="mt-2 text-sm uppercase">
-            Paradigm.xyz Architectural Alignment
-          </p>
-        </header>
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
+      {/* Top Header Navigation */}
+      <header className="w-full max-w-[1200px] px-6 py-8 flex flex-col md:flex-row md:items-center justify-between">
+        <div className="flex items-center gap-3 mb-6 md:mb-0">
+          <div className="w-8 h-8">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
+                className="fill-paradigm-green"
+              />
+              <path
+                d="M12 2L2 7V17"
+                stroke="black"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M22 7L12 12V22"
+                stroke="black"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12 12L2 7"
+                stroke="black"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <span className="font-serif text-2xl font-bold tracking-tight">
+            VibeCard
+          </span>
+        </div>
 
-        {/* Connect State Section */}
-        <section className="p-6 grid gap-4">
-          <h2 className="text-xl font-bold border-b border-pureblack pb-2 mb-2 uppercase">
-            Connect State
+        <nav className="flex gap-6 sm:gap-8 font-mono text-xs font-bold uppercase tracking-wider text-muted">
+          <span className="cursor-pointer hover:text-foreground">About</span>
+          <span className="cursor-pointer hover:text-foreground">Team</span>
+          <span className="cursor-pointer hover:text-foreground">
+            Portfolio
+          </span>
+          <span className="text-paradigm-green">Writing</span>
+          <span className="cursor-pointer hover:text-foreground">
+            Open Source
+          </span>
+        </nav>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="w-full max-w-[1200px] px-6 py-12 flex flex-col lg:flex-row gap-16 lg:gap-24 relative">
+        {/* Left Sidebar (Sticky) */}
+        <aside className="w-full lg:w-48 flex-shrink-0 font-mono text-xs font-bold uppercase tracking-wider space-y-4 text-muted hidden lg:block sticky top-12 self-start">
+          <div className="mb-8 text-foreground pb-2 border-b border-border">
+            CONNECTIONS
+          </div>
+          <div className="hover:text-foreground cursor-pointer transition-colors text-paradigm-green">
+            Oracles
+          </div>
+          <div className="hover:text-foreground cursor-pointer transition-colors">
+            Synthesis
+          </div>
+          <div className="hover:text-foreground cursor-pointer transition-colors">
+            Records
+          </div>
+          <div className="hover:text-foreground cursor-pointer transition-colors">
+            News
+          </div>
+        </aside>
+
+        {/* Right Content */}
+        <div className="flex-grow w-full max-w-3xl">
+          {/* Identity Receipt Top Block (If Generated) */}
+          {vibeCard && (
+            <div className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 pb-2 border-b border-border text-foreground">
+                GENERATED IDENTIFIER
+              </h2>
+
+              <div className="border border-border p-8 sm:p-12 mb-8 bg-gray-50 font-serif">
+                <h1 className="text-4xl sm:text-5xl font-normal tracking-tight mb-8 font-serif leading-tight">
+                  Cryptographic Synthesis of Digital Provenance
+                </h1>
+                <p className="text-sm font-mono text-muted uppercase tracking-wider border-b border-border pb-8 mb-8">
+                  {currentDate} <span className="text-border mx-2">|</span> By
+                  The VibeCard Protocol
+                </p>
+
+                <div className="space-y-6">
+                  {Object.entries(vibeCard).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex flex-col sm:flex-row sm:items-baseline border-b border-border border-dashed pb-3"
+                    >
+                      <span className="font-mono text-xs font-bold uppercase tracking-widest text-muted w-48 mb-1 sm:mb-0">
+                        {key.replace(/([A-Z])/g, "-$1").trim()}
+                      </span>
+                      <span className="font-sans text-xl text-foreground font-medium flex-grow">
+                        {value || "Insufficient Data Correlation"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Section Heading */}
+          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-2 pb-2 border-b border-border text-foreground">
+            {vibeCard ? "AVAILABLE CONNECTIONS" : "FEATURED PROTOCOLS"}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          {/* List of Services */}
+          <div className="flex flex-col mb-12">
             {services.map((service) => (
-              <ServiceButton
+              <ServiceItem
                 key={service.id}
                 service={service}
                 onDataFetched={handleDataFetched}
+                dateString={currentDate}
               />
             ))}
           </div>
-        </section>
 
-        {/* Action Section */}
-        <section className="p-6 border-t border-pureblack flex justify-center">
-          {linkedCount >= 2 ? (
-            <button
-              onClick={handleGenerate}
-              className="w-full py-4 bg-pureblack text-offwhite border border-pureblack uppercase font-bold hover:bg-black/90 transition-colors"
-            >
-              GENERATE CARD
-            </button>
-          ) : (
-            <div className="w-full py-4 border border-pureblack uppercase text-center text-black/50 font-bold bg-transparent cursor-not-allowed">
-              LINK {">="} 2 ORACLES
-            </div>
-          )}
-        </section>
+          {/* Generate Button Area Styled like "All Writing" Search Box */}
+          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 mt-16 text-foreground">
+            RECEIPT GENERATION
+          </h2>
 
-        {/* Final Output / Receipt Component */}
-        {vibeCard && (
-          <section className="p-6 border-t border-pureblack grid gap-6 bg-transparent">
-            <h2 className="text-xl font-bold border-b border-pureblack pb-2 mb-2 uppercase">
-              Identity Receipt
-            </h2>
-
-            <div className="grid grid-cols-1 gap-0 border border-pureblack">
-              {Object.entries(vibeCard).map(([key, value], index, array) => (
-                <div
-                  key={key}
-                  className={`p-4 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center ${index !== array.length - 1 ? "border-b border-pureblack" : ""}`}
-                >
-                  <span className="text-sm uppercase opacity-70 w-1/3 mb-1 sm:mb-0">
-                    {key.replace(/([A-Z])/g, " $1").trim()}
-                  </span>
-                  <span className="text-lg font-bold sm:text-right w-full sm:w-2/3 uppercase tracking-tight">
-                    {value || "NO SIGNAL"}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-xs uppercase text-center opacity-50 mt-4">
-              {new Date().toISOString()} // TX:{" "}
-              {Math.random().toString(36).substring(7).toUpperCase()} // VANA
-              CONNECT
-            </div>
-          </section>
-        )}
-      </div>
+          <div className="flex w-full mb-24">
+            {linkedCount >= 2 ? (
+              <button
+                onClick={handleGenerate}
+                className="w-full text-center py-4 px-6 border border-border bg-white text-foreground font-mono text-sm uppercase tracking-widest hover:border-paradigm-green hover:text-paradigm-green transition-colors focus:outline-none focus:ring-1 focus:ring-paradigm-green"
+              >
+                Synthesize Receipt
+              </button>
+            ) : (
+              <div className="w-full text-center py-4 px-6 border border-border bg-gray-50 text-muted font-mono text-sm uppercase tracking-widest opacity-60">
+                Awaiting minimum protocol synchronization (2)
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
