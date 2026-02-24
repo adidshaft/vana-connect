@@ -1,11 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FFFFFF;
+  --color-foreground: #111111;
+  --color-paradigm-green: #00E050;
+  --color-border: #EAEAEC;
+  --color-muted: #737373;
+
+  --font-mono: SF Mono, ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: Georgia, Cambria, Times New Roman, Times, serif;
+}
 
 @layer base {
   body {
-    @apply bg-background text-foreground font-sans m-0 min-h-screen box-border antialiased selection:bg-paradigm-green selection:text-white;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    margin: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
+
+::selection {
+  background-color: var(--color-paradigm-green);
+  color: #FFFFFF;
 }
 
 *,
@@ -16,10 +38,26 @@
 
 @layer utilities {
   .text-paradigm-green {
-    color: #00E050;
+    color: var(--color-paradigm-green);
   }
 
   .bg-paradigm-green {
-    background-color: #00E050;
+    background-color: var(--color-paradigm-green);
+  }
+
+  .border-border {
+    border-color: var(--color-border);
+  }
+
+  .text-foreground {
+    color: var(--color-foreground);
+  }
+
+  .text-muted {
+    color: var(--color-muted);
+  }
+
+  .bg-background {
+    background-color: var(--color-background);
   }
 }
