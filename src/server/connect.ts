@@ -30,7 +30,11 @@ import { createDataClient } from "./data-client.js";
 export async function connect(
   config: ConnectConfig,
 ): Promise<SessionInitResult> {
-  const { sessionRelayUrl, accountUrl } = getEnvConfig(config.environment);
+  const { sessionRelayUrl: defaultSessionRelayUrl, accountUrl } = getEnvConfig(
+    config.environment,
+  );
+  const sessionRelayUrl =
+    config.customSessionRelayUrl || defaultSessionRelayUrl;
   const signer = createRequestSigner({ privateKey: config.privateKey });
   const granteeAddress = signer.address;
 
@@ -90,7 +94,8 @@ export async function connect(
 export async function getData(
   config: GetDataConfig,
 ): Promise<Record<string, unknown>> {
-  const { gatewayUrl } = getEnvConfig(config.environment);
+  const { gatewayUrl: defaultGatewayUrl } = getEnvConfig(config.environment);
+  const gatewayUrl = config.customGatewayUrl || defaultGatewayUrl;
   const { grant } = config;
 
   const dataClient = createDataClient({

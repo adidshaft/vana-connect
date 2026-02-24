@@ -106,6 +106,10 @@ export interface ConnectConfig {
   appUserId?: string;
   /** SDK environment (`"dev"` or `"prod"`). Defaults to `"prod"`. */
   environment?: "dev" | "prod";
+  /** Override the hardcoded Data Gateway URL for local proxy testing. */
+  customGatewayUrl?: string;
+  /** Override the hardcoded Session Relay URL for local proxy testing. */
+  customSessionRelayUrl?: string;
 }
 
 /** Configuration for the high-level {@link getData} function. */
@@ -116,6 +120,8 @@ export interface GetDataConfig {
   grant: GrantPayload;
   /** SDK environment (`"dev"` or `"prod"`). Defaults to `"prod"`. */
   environment?: "dev" | "prod";
+  /** Override the hardcoded Data Gateway URL for local proxy testing. */
+  customGatewayUrl?: string;
 }
 
 /** Configuration for {@link signVanaManifest}. */
