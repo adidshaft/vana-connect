@@ -9,53 +9,19 @@ import {
 } from "./useVibeCardMappers";
 import { useVanaData } from "@opendatalabs/connect/react";
 
-const services: {
-  id: ServiceType;
-  label: string;
-  author: string;
-  desc: string;
-}[] = [
-  {
-    id: "spotify",
-    label: "Sonic Landscape Analysis",
-    author: "Spotify Protocol",
-    desc: "Analyzes recent listening history, genre overlap, and tempo preferences to determine your foundational sonic frequency and emotional polarity.",
-  },
-  {
-    id: "chatgpt",
-    label: "Neural Construct Diagnostics",
-    author: "OpenAI Interface",
-    desc: "Processes interaction logs and prompt structures to map your cognitive architecture, curiosity vectors, and generalized mind palace.",
-  },
-  {
-    id: "linkedin",
-    label: "Professional Graph Optimization",
-    author: "LinkedIn Protocol",
-    desc: "Evaluates network topology, endorsement density, and career velocity to synthesize your current operational grind and corporate synergy.",
-  },
-  {
-    id: "instagram",
-    label: "Visual Aesthetic Indexing",
-    author: "Meta Scraper",
-    desc: "Ingests photographic metadata, color palettes, and engagement ratios to compute a definitive visual aesthetic and curation index.",
-  },
+const services: { id: ServiceType; label: string }[] = [
+  { id: "spotify", label: "SPOTIFY" },
+  { id: "chatgpt", label: "CHATGPT" },
+  { id: "linkedin", label: "LINKEDIN" },
+  { id: "instagram", label: "INSTAGRAM" },
 ];
 
-function formatDate(date: Date) {
-  const mo = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(date);
-  const da = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(date);
-  const ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(date);
-  return `${mo}.${da}.${ye}`;
-}
-
-function ServiceItem({
+function ServiceButton({
   service,
   onDataFetched,
-  dateString,
 }: {
-  service: { id: ServiceType; label: string; author: string; desc: string };
+  service: { id: ServiceType; label: string };
   onDataFetched: (id: ServiceType, data: Record<string, unknown>) => void;
-  dateString: string;
 }) {
   const { status, data, connectUrl, initConnect, isLoading, isConnected } =
     useVanaData({
@@ -69,96 +35,66 @@ function ServiceItem({
     }
   }, [data, service.id, onDataFetched]);
 
-  // Connected State
+  const baseClasses =
+    "flex flex-col border-pureblack border-b sm:border-b-0 sm:border-r last:border-0 p-6 justify-between min-h-[200px] text-left";
+
   if (isConnected || status === "approved") {
     return (
-      <div className="flex gap-6 py-8 border-b border-border group">
-        <div className="hidden sm:block w-48 h-32 bg-gray-50 border border-border flex-shrink-0 relative overflow-hidden flex flex-col justify-end p-4 grayscale bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]">
-          <div className="absolute top-0 right-0 w-8 h-8 bg-paradigm-green text-white flex items-center justify-center font-mono text-xs">
-            ✓
-          </div>
-          <div className="text-xl font-serif text-muted font-bold opacity-30">
-            {service.id.toUpperCase()}
-          </div>
+      <div className={`${baseClasses} bg-pureblack text-offwhite`}>
+        <div className="text-sm tracking-widest uppercase">
+          STATUS: CONNECTED
         </div>
-        <div className="flex flex-col flex-grow">
-          <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors">
+        <div>
+          <h2 className="text-3xl sm:text-4xl uppercase mb-2 font-mono">
             {service.label}
-          </h3>
-          <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-            Data payload successfully retrieved and securely stored locally.
-            Identity nodes aligned for synthesis.
-          </p>
-          <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
-            <span>{dateString}</span>
-            <span className="text-border">|</span>
-            <span>By {service.author}</span>
-            <span className="ml-auto text-paradigm-green bg-green-50 px-2 py-1">
-              Linked
-            </span>
+          </h2>
+          <div className="text-sm border-offwhite border px-3 py-1 inline-block uppercase font-bold">
+            LINKED [X]
           </div>
         </div>
       </div>
     );
   }
 
-  // Waiting to authorize (link generated)
   if (connectUrl && status === "waiting") {
     return (
-      <div
-        className="flex gap-6 py-8 border-b border-border group cursor-pointer"
-        onClick={() => window.open(connectUrl, "_blank")}
+      <a
+        href={connectUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${baseClasses} bg-offwhite text-pureblack hover:bg-pureblack hover:text-offwhite cursor-pointer`}
       >
-        <div className="hidden sm:block w-48 h-32 bg-gray-50 border border-border flex-shrink-0 flex items-center justify-center bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]"></div>
-        <div className="flex flex-col flex-grow">
-          <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors">
+        <div className="text-sm tracking-widest uppercase">ACTION REQUIRED</div>
+        <div>
+          <h2 className="text-3xl sm:text-4xl uppercase mb-2 font-mono">
             {service.label}
-          </h3>
-          <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-            Connection requested. Please authorize the secure gateway to grant
-            access to your data nodes.
-          </p>
-          <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
-            <span>{dateString}</span>
-            <span className="text-border">|</span>
-            <span>By {service.author}</span>
-            <button className="ml-auto hover:text-paradigm-green transition-colors text-foreground group-hover:underline">
-              Proceed to Gateway →
-            </button>
+          </h2>
+          <div className="text-sm border-current border px-3 py-1 inline-block uppercase font-bold">
+            AUTHORIZE {">"}
           </div>
         </div>
-      </div>
+      </a>
     );
   }
 
-  // Default state / Loading
   return (
-    <div
-      className={`flex gap-6 py-8 border-b border-border group ${isLoading || status === "connecting" ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
-      onClick={() => {
-        if (!isLoading && status !== "connecting") void initConnect();
-      }}
+    <button
+      onClick={() => void initConnect()}
+      disabled={isLoading || status === "connecting"}
+      className={`${baseClasses} bg-offwhite text-pureblack hover:bg-pureblack hover:text-offwhite cursor-pointer disabled:opacity-50`}
     >
-      <div className="hidden sm:block w-48 h-32 bg-white border border-border flex-shrink-0 flex items-center justify-center transition-colors group-hover:bg-gray-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')]"></div>
-      <div className="flex flex-col flex-grow">
-        <h3 className="text-2xl font-serif tracking-tight text-foreground mb-2 group-hover:text-muted transition-colors delay-75">
+      <div className="text-sm tracking-widest uppercase">DISCONNECTED</div>
+      <div>
+        <h2 className="text-3xl sm:text-4xl uppercase mb-2 font-mono">
           {service.label}
-        </h3>
-        <p className="text-sm text-foreground/80 mb-4 max-w-2xl font-serif leading-relaxed">
-          {service.desc}
-        </p>
-        <div className="flex gap-4 items-center text-xs font-mono font-bold text-muted uppercase tracking-wider mt-auto">
-          <span>{dateString}</span>
-          <span className="text-border">|</span>
-          <span>By {service.author}</span>
-          <span className="ml-auto font-mono text-foreground hover:text-paradigm-green transition-colors font-bold group-hover:underline">
-            {isLoading || status === "connecting"
-              ? "Connecting..."
-              : "Initialize"}
-          </span>
+        </h2>
+        <div className="text-sm border-current border px-3 py-1 inline-block uppercase font-bold">
+          {isLoading || status === "connecting"
+            ? "INITIALIZING..."
+            : "CONNECT [+]"}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -166,8 +102,6 @@ export default function VibeCardPage() {
   const [aggregatedData, setAggregatedData] = useState<RawVanaData>({});
   const [vibeCard, setVibeCard] = useState<VibeCardTraits | null>(null);
   const { mapVibeData } = useVibeCardMappers();
-
-  const currentDate = formatDate(new Date());
 
   const handleDataFetched = (
     serviceId: ServiceType,
@@ -182,146 +116,119 @@ export default function VibeCardPage() {
 
   const handleGenerate = () => {
     setVibeCard(mapVibeData(aggregatedData));
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const linkedCount = Object.keys(aggregatedData).length;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
-      {/* Top Header Navigation */}
-      <header className="w-full max-w-[1200px] px-6 py-8 flex flex-col md:flex-row md:items-center justify-between border-b border-border">
-        <div className="flex items-center gap-3 mb-6 md:mb-0">
-          <div className="w-8 h-8 relative">
-            <div className="absolute inset-0 border-2 border-foreground rotate-45 transform transition-transform hover:rotate-90 duration-500"></div>
-            <div className="absolute inset-2 bg-paradigm-green"></div>
-          </div>
-          <span className="font-serif text-2xl font-bold tracking-tight">
-            Vibe Protocol
-          </span>
+    <div className="min-h-screen bg-offwhite text-pureblack font-mono flex flex-col items-center p-4 sm:p-8">
+      {/* Container wrapper for border grid */}
+      <div className="w-full max-w-6xl border-pureblack border-2 flex flex-col bg-offwhite">
+        {/* Header */}
+        <header className="border-pureblack border-b-2 p-6 sm:p-12">
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl tracking-tighter uppercase mb-6 leading-none font-black font-mono">
+            THE ULTIMATE
+            <br />
+            VIBE CARD
+          </h1>
+          <p className="text-lg sm:text-2xl uppercase border-pureblack border-l-4 pl-4 font-bold max-w-2xl bg-offwhite pb-2 pt-1 border-t-0 border-r-0 border-b-0">
+            CURRENT ERA DIGITAL SNAPSHOT INGESTION.
+          </p>
+        </header>
+
+        {/* System Status Banner */}
+        <div className="border-pureblack border-b-2 bg-pureblack text-offwhite p-4 uppercase text-sm font-bold tracking-widest flex justify-between">
+          <span>SYSTEM // ONLINE</span>
+          <span>{linkedCount} / 4 ORACLES LINKED</span>
         </div>
 
-        <nav className="flex gap-6 sm:gap-8 font-mono text-xs font-bold uppercase tracking-wider text-muted">
-          <span className="cursor-pointer hover:text-foreground">
-            Manifesto
-          </span>
-          <span className="cursor-pointer hover:text-foreground">
-            Architecture
-          </span>
-          <span className="cursor-pointer hover:text-foreground">Network</span>
-          <span className="text-paradigm-green">Synthesis</span>
-          <span className="cursor-pointer hover:text-foreground">SDK</span>
-        </nav>
-      </header>
+        {/* Grid of Connections */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-pureblack border-b-2">
+          {services.map((service) => (
+            <ServiceButton
+              key={service.id}
+              service={service}
+              onDataFetched={handleDataFetched}
+            />
+          ))}
+        </section>
 
-      {/* Main Content Area */}
-      <main className="w-full max-w-[1200px] px-6 py-12 flex flex-col lg:flex-row gap-16 lg:gap-24 relative">
-        {/* Left Sidebar (Sticky) */}
-        <aside className="w-full lg:w-48 flex-shrink-0 font-mono text-xs font-bold uppercase tracking-wider space-y-4 text-muted hidden lg:block sticky top-12 self-start">
-          <div className="mb-8 text-foreground pb-2 border-b border-border">
-            DATA SOURCES
-          </div>
-          <div className="hover:text-foreground cursor-pointer transition-colors text-paradigm-green">
-            Active Oracles
-          </div>
-          <div className="hover:text-foreground cursor-pointer transition-colors">
-            Archived Vaults
-          </div>
-          <div className="hover:text-foreground cursor-pointer transition-colors">
-            Permissions
-          </div>
-          <div className="hover:text-foreground cursor-pointer transition-colors">
-            Export Logs
-          </div>
-        </aside>
-
-        {/* Right Content */}
-        <div className="flex-grow w-full max-w-3xl">
-          <div className="mb-16 font-serif">
-            <h1 className="text-5xl font-normal tracking-tight mb-6 leading-tight">
-              Cryptographic Identity Synthesis via Multi-Oracle Ingestion
-            </h1>
-            <p className="text-lg text-foreground/80 leading-relaxed max-w-2xl">
-              Connect disparate Web2 data silos to generate a sovereign, unified
-              digital personality receipt. The Vibe Protocol computes emotional
-              polarity, cognitive structure, and visual aesthetics from raw
-              authorized payloads.
-            </p>
-          </div>
-
-          {/* Identity Receipt Top Block (If Generated) */}
-          {vibeCard && (
-            <div className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 pb-2 border-b border-border text-foreground">
-                GENERATED IDENTIFIER (VIBE CARD)
-              </h2>
-
-              <div className="border border-border p-8 sm:p-12 mb-8 bg-gray-50 font-serif">
-                <h1 className="text-4xl sm:text-5xl font-normal tracking-tight mb-8 font-serif leading-tight">
-                  Definitive Resonance Profile
-                </h1>
-                <p className="text-sm font-mono text-muted uppercase tracking-wider border-b border-border pb-8 mb-8">
-                  {currentDate} <span className="text-border mx-2">|</span> ID:{" "}
-                  {Math.random().toString(36).substring(2, 10).toUpperCase()}
-                </p>
-
-                <div className="space-y-6">
-                  {Object.entries(vibeCard).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex flex-col sm:flex-row sm:items-baseline border-b border-border border-dashed pb-3"
-                    >
-                      <span className="font-mono text-xs font-bold uppercase tracking-widest text-muted w-48 mb-1 sm:mb-0">
-                        {key.replace(/([A-Z])/g, "-$1").trim()}
-                      </span>
-                      <span className="font-sans text-xl text-foreground font-medium flex-grow">
-                        {value || "Insufficient Data Correlation"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+        {/* Generate Button Action */}
+        <section className="p-8 sm:p-16 flex justify-center items-center border-pureblack border-b-2 bg-offwhite">
+          {linkedCount >= 2 ? (
+            <button
+              onClick={handleGenerate}
+              className="text-3xl sm:text-5xl border-pureblack border-4 px-12 py-6 uppercase font-black hover:bg-pureblack hover:text-offwhite cursor-pointer bg-offwhite text-pureblack transition-none"
+            >
+              GENERATE RECEIPT
+            </button>
+          ) : (
+            <div className="text-2xl sm:text-4xl uppercase font-bold opacity-30 cursor-not-allowed">
+              AWAITING CONNECTIONS...
             </div>
           )}
+        </section>
 
-          {/* Section Heading */}
-          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-2 pb-2 border-b border-border text-foreground">
-            {vibeCard ? "AVAILABLE CONNECTIONS" : "ORACLE ENDPOINTS"}
-          </h2>
-
-          {/* List of Services */}
-          <div className="flex flex-col mb-12">
-            {services.map((service) => (
-              <ServiceItem
-                key={service.id}
-                service={service}
-                onDataFetched={handleDataFetched}
-                dateString={currentDate}
-              />
-            ))}
-          </div>
-
-          {/* Generate Button Area Styled like "All Writing" Search Box */}
-          <h2 className="text-sm font-mono font-bold uppercase tracking-wider mb-6 mt-16 text-foreground border-t border-border pt-12">
-            RECEIPT GENERATION
-          </h2>
-
-          <div className="flex w-full mb-24">
-            {linkedCount >= 2 ? (
-              <button
-                onClick={handleGenerate}
-                className="w-full text-center py-5 px-6 border border-paradigm-green bg-paradigm-green text-white font-sans font-medium text-lg tracking-wide hover:bg-paradigm-green/90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-paradigm-green rounded-sm"
-              >
-                Synthesize Vibe Card
-              </button>
-            ) : (
-              <div className="w-full text-center py-5 px-6 border border-border bg-gray-50 text-muted font-sans font-medium text-lg tracking-wide opacity-60 rounded-sm">
-                Awaiting minimum protocol synchronization (2 Data Sources)
+        {/* Output Area (The Digital Trading Card / Receipt) */}
+        {vibeCard && (
+          <section className="p-8 sm:p-16 flex justify-center bg-offwhite">
+            <div className="w-full max-w-3xl border-pureblack border-4 p-8 sm:p-12 bg-offwhite relative">
+              <div className="absolute top-4 right-6 text-xs font-bold opacity-50 uppercase tracking-widest">
+                ID: {Math.random().toString(36).substring(2, 12).toUpperCase()}
               </div>
-            )}
-          </div>
-        </div>
-      </main>
+
+              <div className="border-pureblack border-b-4 pb-6 mb-8 flex flex-col justify-end">
+                <h2 className="text-5xl sm:text-7xl tracking-tighter uppercase mb-2 font-black">
+                  RECEIPT
+                </h2>
+                <span className="text-sm font-bold uppercase tracking-widest border-pureblack border inline-block px-2 py-1 max-w-max">
+                  TIMESTAMP: {new Date().toISOString().split("T")[0]} // SECURED
+                </span>
+              </div>
+
+              <div className="flex flex-col space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end border-pureblack border-b-2 border-dashed pb-2">
+                  <span className="text-sm uppercase tracking-widest font-bold mb-1 sm:mb-0">
+                    CURRENT MOOD:
+                  </span>
+                  <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
+                    {vibeCard["Current Mood"]}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end border-pureblack border-b-2 border-dashed pb-2">
+                  <span className="text-sm uppercase tracking-widest font-bold mb-1 sm:mb-0">
+                    CURRENT OBSESSION:
+                  </span>
+                  <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
+                    {vibeCard["Current Obsession"]}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end border-pureblack border-b-2 border-dashed pb-2">
+                  <span className="text-sm uppercase tracking-widest font-bold mb-1 sm:mb-0">
+                    AESTHETIC:
+                  </span>
+                  <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
+                    {vibeCard["Aesthetic"]}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end border-pureblack border-b-2 border-dashed pb-2">
+                  <span className="text-sm uppercase tracking-widest font-bold mb-1 sm:mb-0">
+                    GRIND LEVEL:
+                  </span>
+                  <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
+                    {vibeCard["Grind Level"]}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-12 pt-4 border-pureblack border-t-4 text-center text-xs uppercase tracking-widest font-bold flex justify-between">
+                <span>END OF RECEIPT //</span>
+                <span>VANA CONNECT V1</span>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,63 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #FFFFFF;
-  --color-foreground: #111111;
-  --color-paradigm-green: #00E050;
-  --color-border: #EAEAEC;
-  --color-muted: #737373;
-
-  --font-mono: SF Mono, ui-monospace, Menlo, Monaco, Consolas, monospace;
-  --font-sans: Inter, system-ui, sans-serif;
-  --font-serif: Georgia, Cambria, Times New Roman, Times, serif;
+  --color-offwhite: #FAF9F6;
+  --color-pureblack: #000000;
 }
 
 @layer base {
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    background-color: var(--color-offwhite);
+    color: var(--color-pureblack);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     margin: 0;
     min-height: 100vh;
     box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-}
-
-::selection {
-  background-color: var(--color-paradigm-green);
-  color: #FFFFFF;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 @layer utilities {
-  .text-paradigm-green {
-    color: var(--color-paradigm-green);
+  .bg-offwhite {
+    background-color: var(--color-offwhite);
   }
 
-  .bg-paradigm-green {
-    background-color: var(--color-paradigm-green);
+  .text-offwhite {
+    color: var(--color-offwhite);
   }
 
-  .border-border {
-    border-color: var(--color-border);
+  .bg-pureblack {
+    background-color: var(--color-pureblack);
   }
 
-  .text-foreground {
-    color: var(--color-foreground);
+  .text-pureblack {
+    color: var(--color-pureblack);
   }
 
-  .text-muted {
-    color: var(--color-muted);
-  }
-
-  .bg-background {
-    background-color: var(--color-background);
+  .border-pureblack {
+    border-color: var(--color-pureblack);
   }
 }
