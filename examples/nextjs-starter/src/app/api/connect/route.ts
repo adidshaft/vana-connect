@@ -16,11 +16,9 @@ export async function POST(req: Request) {
     const service = searchParams.get("service") || "";
     const scopes = SCOPE_MAP[service] || config.scopes;
 
-    const customSessionRelayUrl = process.env.NEXT_PUBLIC_VANA_API_URL;
     const sessionConfig = {
       ...config,
       scopes,
-      ...(customSessionRelayUrl && { customSessionRelayUrl }),
     };
     const result = await connect(sessionConfig);
     return NextResponse.json(result);
