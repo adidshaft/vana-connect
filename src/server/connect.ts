@@ -94,8 +94,7 @@ export async function connect(
 export async function getData(
   config: GetDataConfig,
 ): Promise<Record<string, unknown>> {
-  const { gatewayUrl: defaultGatewayUrl } = getEnvConfig(config.environment);
-  const gatewayUrl = config.customGatewayUrl || defaultGatewayUrl;
+  const { gatewayUrl } = getEnvConfig(config.environment);
   const { grant } = config;
 
   const dataClient = createDataClient({
@@ -113,6 +112,7 @@ export async function getData(
         serverUrl,
         scope,
         grantId: grant.grantId,
+        proxyUrl: config.customServerUrl,
       });
       return [scope, result] as const;
     }),

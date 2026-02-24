@@ -32,13 +32,6 @@ export function createDataClient(config: DataClientConfig): DataClient {
 
   return {
     async resolveServerUrl(userAddress: string): Promise<string> {
-      if (
-        gatewayBase.includes("localhost") ||
-        gatewayBase.includes("127.0.0.1")
-      ) {
-        return gatewayBase;
-      }
-
       const res = await fetch(`${gatewayBase}/v1/servers/${userAddress}`);
 
       if (res.status === 404) {
@@ -78,7 +71,10 @@ export function createDataClient(config: DataClientConfig): DataClient {
         grantId: params.grantId,
       });
 
-      const url = `${base}${uri}`;
+      const fetchBase = params.proxyUrl
+        ? params.proxyUrl.replace(/\/+$/, "")
+        : base;
+      const url = `${fetchBase}${uri}`;
       const res = await fetch(url, {
         headers: { Authorization: authHeader },
       });

@@ -66,6 +66,8 @@ export interface DataFetchParams {
   fileId?: string;
   /** Optional ISO 8601 timestamp to fetch data at a specific point in time. */
   at?: string;
+  /** Optional URL to physically route network requests without affecting signature audience. */
+  proxyUrl?: string;
 }
 
 /** Configuration for {@link createRequestSigner}. */
@@ -120,8 +122,8 @@ export interface GetDataConfig {
   grant: GrantPayload;
   /** SDK environment (`"dev"` or `"prod"`). Defaults to `"prod"`. */
   environment?: "dev" | "prod";
-  /** Override the hardcoded Data Gateway URL for local proxy testing. */
-  customGatewayUrl?: string;
+  /** Override the resolved Personal Server network routing URL for local proxy testing. */
+  customServerUrl?: string;
 }
 
 /** Configuration for {@link signVanaManifest}. */

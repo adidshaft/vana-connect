@@ -16,12 +16,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const customGatewayUrl = process.env.NEXT_PUBLIC_VANA_API_URL;
+    const customServerUrl = process.env.NEXT_PUBLIC_VANA_API_URL;
     const data = await getData({
       privateKey: config.privateKey,
       grant,
       environment: config.environment,
-      ...(customGatewayUrl && { customGatewayUrl }),
+      ...(customServerUrl && { customServerUrl }),
     });
 
     return NextResponse.json({ data });
