@@ -1,66 +1,103 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useVibeCardMappers,
   RawVanaData,
   ServiceType,
   VibeCardTraits,
 } from "./useVibeCardMappers";
+import { useVanaData } from "@opendatalabs/connect/react";
 
-const MOCK_DATA: RawVanaData = {
-  spotify: {
-    topTracks: ["Vroom Vroom", "Track 2"],
-    topGenres: ["hyperpop", "electronic"],
-  },
-  chatgpt: {
-    commonPrompts: ["How to use App Router", "Why am I here"],
-    topics: ["nextjs", "existentialism"],
-  },
-  linkedin: {
-    headline: "Founder & CEO @ Stealth Startup",
-    recentPosts: ["Excited to announce...", "Hiring 10x engineers"],
-  },
-  instagram: {
-    dominantColors: ["black", "white"],
-    frequentCaptions: ["vibe check", "mood"],
-  },
-};
+const services: { id: ServiceType; label: string }[] = [
+  { id: "spotify", label: "SPOTIFY" },
+  { id: "chatgpt", label: "CHATGPT" },
+  { id: "linkedin", label: "LINKEDIN" },
+  { id: "instagram", label: "INSTAGRAM" },
+];
+
+function ServiceButton({
+  service,
+  onDataFetched,
+}: {
+  service: { id: ServiceType; label: string };
+  onDataFetched: (id: ServiceType, data: Record<string, unknown>) => void;
+}) {
+  const { status, data, connectUrl, initConnect, isLoading, isConnected } =
+    useVanaData({
+      connectUrl: `/api/connect?service=${service.id}`,
+      autoFetch: true,
+    });
+
+  useEffect(() => {
+    if (data) {
+      onDataFetched(service.id, (data as Record<string, unknown>) || {});
+    }
+  }, [data, service.id, onDataFetched]);
+
+  // If already linked/approved
+  if (isConnected || status === "approved") {
+    return (
+      <button
+        disabled
+        className="w-full py-4 border border-pureblack rounded-none bg-pureblack text-offwhite uppercase font-bold"
+      >
+        {service.label} LINKED
+      </button>
+    );
+  }
+
+  // If session is ready, we need the user to click to open the auth window
+  if (connectUrl && status === "waiting") {
+    return (
+      <a
+        href={connectUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full py-4 border border-pureblack rounded-none text-pureblack bg-transparent hover:bg-black/5 text-center uppercase font-bold"
+      >
+        AUTHORIZE {service.label}
+      </a>
+    );
+  }
+
+  // Initial connect button (or connecting state)
+  return (
+    <button
+      onClick={() => {
+        void initConnect();
+      }}
+      disabled={isLoading || status === "connecting"}
+      className="w-full py-4 border border-pureblack rounded-none transition-colors uppercase font-bold text-pureblack bg-transparent hover:bg-black/5 disabled:opacity-50"
+    >
+      {isLoading || status === "connecting"
+        ? "CONNECTING..."
+        : `CONNECT ${service.label}`}
+    </button>
+  );
+}
 
 export default function VibeCardPage() {
-  const [linkedServices, setLinkedServices] = useState<ServiceType[]>([]);
+  const [aggregatedData, setAggregatedData] = useState<RawVanaData>({});
   const [vibeCard, setVibeCard] = useState<VibeCardTraits | null>(null);
   const { mapVibeData } = useVibeCardMappers();
 
-  const handleConnect = (service: ServiceType) => {
-    setLinkedServices((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service],
-    );
+  const handleDataFetched = (
+    serviceId: ServiceType,
+    data: Record<string, unknown>,
+  ) => {
+    console.log(`[Vana live payload for ${serviceId}]:`, data);
+    setAggregatedData((prev) => ({
+      ...prev,
+      [serviceId]: data[serviceId] || data, // data comes from the specific scope config
+    }));
   };
 
   const handleGenerate = () => {
-    // Only pass data for linked services
-    const dataToMap: RawVanaData = {};
-    if (linkedServices.includes("spotify"))
-      dataToMap.spotify = MOCK_DATA.spotify;
-    if (linkedServices.includes("chatgpt"))
-      dataToMap.chatgpt = MOCK_DATA.chatgpt;
-    if (linkedServices.includes("linkedin"))
-      dataToMap.linkedin = MOCK_DATA.linkedin;
-    if (linkedServices.includes("instagram"))
-      dataToMap.instagram = MOCK_DATA.instagram;
-
-    setVibeCard(mapVibeData(dataToMap));
+    setVibeCard(mapVibeData(aggregatedData));
   };
 
-  const services: { id: ServiceType; label: string }[] = [
-    { id: "spotify", label: "SPOTIFY" },
-    { id: "chatgpt", label: "CHATGPT" },
-    { id: "linkedin", label: "LINKEDIN" },
-    { id: "instagram", label: "INSTAGRAM" },
-  ];
+  const linkedCount = Object.keys(aggregatedData).length;
 
   return (
     <div className="min-h-screen bg-offwhite text-pureblack font-mono p-8 flex flex-col items-center">
@@ -81,29 +118,19 @@ export default function VibeCardPage() {
             Connect State
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {services.map((service) => {
-              const isLinked = linkedServices.includes(service.id);
-              return (
-                <button
-                  key={service.id}
-                  onClick={() => handleConnect(service.id)}
-                  className={`
-                    w-full py-4 border border-pureblack rounded-none transition-colors uppercase font-bold
-                    ${isLinked ? "bg-pureblack text-offwhite" : "bg-transparent text-pureblack hover:bg-black/5"}
-                  `}
-                >
-                  {isLinked
-                    ? `${service.label} LINKED`
-                    : `CONNECT ${service.label}`}
-                </button>
-              );
-            })}
+            {services.map((service) => (
+              <ServiceButton
+                key={service.id}
+                service={service}
+                onDataFetched={handleDataFetched}
+              />
+            ))}
           </div>
         </section>
 
         {/* Action Section */}
         <section className="p-6 border-t border-pureblack flex justify-center">
-          {linkedServices.length >= 2 ? (
+          {linkedCount >= 2 ? (
             <button
               onClick={handleGenerate}
               className="w-full py-4 bg-pureblack text-offwhite border border-pureblack uppercase font-bold hover:bg-black/90 transition-colors"

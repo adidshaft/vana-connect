@@ -1,14 +1,26 @@
-// Creates a session to connect data from DataConnect into your app.
-// Returns a connect URL for the user to approve the connection.
-
 import { NextResponse } from "next/server";
 import { connect } from "@opendatalabs/connect/server";
 import { ConnectError } from "@opendatalabs/connect/core";
 import { config } from "@/config";
 
-export async function POST() {
+const SCOPE_MAP: Record<string, string[]> = {
+  spotify: ["spotify"],
+  chatgpt: ["chatgpt.conversations"],
+  linkedin: ["linkedin"],
+  instagram: ["instagram"],
+};
+
+export async function POST(req: Request) {
   try {
-    const result = await connect(config);
+    const { searchParams } = new URL(req.url);
+    const service = searchParams.get("service") || "";
+    const scopes = SCOPE_MAP[service] || config.scopes;
+
+    const sessionConfig = {
+      ...config,
+      scopes,
+    };
+    const result = await connect(sessionConfig);
     return NextResponse.json(result);
   } catch (err) {
     const message =
