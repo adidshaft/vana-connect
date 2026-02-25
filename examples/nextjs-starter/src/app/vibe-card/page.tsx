@@ -14,6 +14,7 @@ const services: { id: ServiceType; label: string }[] = [
   { id: "chatgpt", label: "CHATGPT" },
   { id: "linkedin", label: "LINKEDIN" },
   { id: "instagram", label: "INSTAGRAM" },
+  { id: "github", label: "GITHUB" },
 ];
 
 function ServiceButton({
@@ -23,9 +24,10 @@ function ServiceButton({
   service: { id: ServiceType; label: string };
   onDataFetched: (id: ServiceType, data: Record<string, unknown>) => void;
 }) {
-  const { status, data, connectUrl, initConnect, isLoading, isConnected } =
+  const { error, status, data, connectUrl, initConnect, isLoading, isConnected } =
     useVanaData({
       connectUrl: `/api/connect?service=${service.id}`,
+      dataUrl: `/api/data`,
       autoFetch: true,
     });
 
@@ -36,7 +38,7 @@ function ServiceButton({
   }, [data, service.id, onDataFetched]);
 
   const baseClasses =
-    "flex flex-col border-pureblack border-b sm:border-b-0 sm:border-r last:border-0 p-6 justify-between min-h-[200px] text-left";
+    "flex flex-col border-pureblack border-b sm:border-b-0 sm:border-r last:border-0 p-6 justify-between min-h-[200px] text-left relative";
 
   if (isConnected || status === "approved") {
     return (
@@ -49,8 +51,13 @@ function ServiceButton({
             {service.label}
           </h2>
           <div className="text-sm border-offwhite border px-3 py-1 inline-block uppercase font-bold">
-            LINKED [X]
+            {error ? "ERROR" : "LINKED [X]"}
           </div>
+          {error && (
+            <div className="text-xs text-red-500 mt-2 font-bold font-mono">
+              [FETCH_ERR]: {error}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -64,7 +71,9 @@ function ServiceButton({
         rel="noopener noreferrer"
         className={`${baseClasses} bg-offwhite text-pureblack hover:bg-pureblack hover:text-offwhite cursor-pointer`}
       >
-        <div className="text-sm tracking-widest uppercase">ACTION REQUIRED</div>
+        <div className="text-sm tracking-widest uppercase text-red-600 font-bold mb-2">
+          ACTION REQUIRED
+        </div>
         <div>
           <h2 className="text-3xl sm:text-4xl uppercase mb-2 font-mono">
             {service.label}
@@ -72,6 +81,7 @@ function ServiceButton({
           <div className="text-sm border-current border px-3 py-1 inline-block uppercase font-bold">
             AUTHORIZE {">"}
           </div>
+          <div className="text-xs text-pureblack/50 mt-2 font-mono">(Check Vana Dev UI)</div>
         </div>
       </a>
     );
@@ -83,7 +93,7 @@ function ServiceButton({
       disabled={isLoading || status === "connecting"}
       className={`${baseClasses} bg-offwhite text-pureblack hover:bg-pureblack hover:text-offwhite cursor-pointer disabled:opacity-50`}
     >
-      <div className="text-sm tracking-widest uppercase">DISCONNECTED</div>
+      <div className="text-sm tracking-widest uppercase opacity-50">DISCONNECTED</div>
       <div>
         <h2 className="text-3xl sm:text-4xl uppercase mb-2 font-mono">
           {service.label}
@@ -93,6 +103,11 @@ function ServiceButton({
             ? "INITIALIZING..."
             : "CONNECT [+]"}
         </div>
+        {error && (
+          <div className="text-xs text-red-500 mt-2 font-bold font-mono text-left">
+            [INIT_ERR]: {error}
+          </div>
+        )}
       </div>
     </button>
   );
@@ -103,16 +118,19 @@ export default function VibeCardPage() {
   const [vibeCard, setVibeCard] = useState<VibeCardTraits | null>(null);
   const { mapVibeData } = useVibeCardMappers();
 
-  const handleDataFetched = (
+  const handleDataFetched = React.useCallback((
     serviceId: ServiceType,
     data: Record<string, unknown>,
   ) => {
     console.log(`[Vana live payload for ${serviceId}]:`, data);
-    setAggregatedData((prev) => ({
-      ...prev,
-      [serviceId]: data[serviceId] || data,
-    }));
-  };
+    setAggregatedData((prev) => {
+      if (prev[serviceId]) return prev;
+      return {
+        ...prev,
+        [serviceId]: data.data ? (data.data as any)[`${serviceId}.profile`] || data.data : data,
+      };
+    });
+  }, []);
 
   const handleGenerate = () => {
     setVibeCard(mapVibeData(aggregatedData));
@@ -139,11 +157,11 @@ export default function VibeCardPage() {
         {/* System Status Banner */}
         <div className="border-pureblack border-b-2 bg-pureblack text-offwhite p-4 uppercase text-sm font-bold tracking-widest flex justify-between">
           <span>SYSTEM // ONLINE</span>
-          <span>{linkedCount} / 4 ORACLES LINKED</span>
+          <span>{linkedCount} / 5 ORACLES LINKED</span>
         </div>
 
         {/* Grid of Connections */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-pureblack border-b-2">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border-pureblack border-b-2">
           {services.map((service) => (
             <ServiceButton
               key={service.id}
@@ -217,6 +235,14 @@ export default function VibeCardPage() {
                   </span>
                   <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
                     {vibeCard["Grind Level"]}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end border-pureblack border-b-2 border-dashed pb-2">
+                  <span className="text-sm uppercase tracking-widest font-bold mb-1 sm:mb-0">
+                    CODE VIBE:
+                  </span>
+                  <span className="text-2xl sm:text-4xl uppercase font-black text-right sm:text-left">
+                    {vibeCard["Code Vibe"]}
                   </span>
                 </div>
               </div>

@@ -79,10 +79,11 @@ export function createSessionRelay(config: SessionRelayConfig): SessionRelay {
         const errorBody = await res.json().catch(() => ({}));
         const errorMsg =
           (errorBody as Record<string, unknown>).error &&
-          typeof (errorBody as Record<string, unknown>).error === "object"
+            typeof (errorBody as Record<string, unknown>).error === "object"
             ? ((errorBody as Record<string, Record<string, unknown>>).error
-                .message as string)
+              .message as string)
             : `Session init failed: ${res.status}`;
+
         throw new ConnectError(
           errorMsg,
           ((errorBody as Record<string, Record<string, unknown>>).error

@@ -55,9 +55,9 @@ export function useVibeCardMappers() {
     }
 
     return {
-      "Current Mood": data.spotify ? "ETHEREAL" : "WAITING...",
-      "Current Obsession": data.chatgpt ? "RECURSIVE ALGORITHMS" : "WAITING...",
-      Aesthetic: data.instagram ? "BRUTALIST MONOCHROME" : "WAITING...",
+      "Current Mood": data.spotify ? "ETHEREAL" : "UNAUTHENTICATED",
+      "Current Obsession": data.chatgpt ? "RECURSIVE ALGORITHMS" : "UNAUTHENTICATED",
+      Aesthetic: data.instagram ? "BRUTALIST MONOCHROME" : "UNAUTHENTICATED",
       "Grind Level": linkedinGrind,
       "Code Vibe": githubVibe,
     };

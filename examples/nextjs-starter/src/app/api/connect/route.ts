@@ -4,10 +4,11 @@ import { ConnectError } from "@opendatalabs/connect/core";
 import { config } from "@/config";
 
 const SCOPE_MAP: Record<string, string[]> = {
-  spotify: ["spotify"],
+  spotify: ["spotify.history"],
   chatgpt: ["chatgpt.conversations"],
-  linkedin: ["linkedin"],
-  instagram: ["instagram"],
+  linkedin: ["linkedin.profile"],
+  instagram: ["instagram.profile"],
+  github: ["github.profile"],
 };
 
 export async function POST(req: Request) {
