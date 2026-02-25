@@ -5,8 +5,9 @@ const SCOPES = ["chatgpt.conversations"];
 
 export const config = createVanaConfig({
   privateKey: (process.env.VANA_PRIVATE_KEY ??
-    process.env.VANA_APP_PRIVATE_KEY) as `0x${string}`,
+    process.env.VANA_APP_PRIVATE_KEY ??
+    "0x0000000000000000000000000000000000000000000000000000000000000000") as `0x${string}`,
   scopes: SCOPES,
-  appUrl: process.env.APP_URL ?? "",
+  appUrl: process.env.APP_URL ?? "http://localhost:3001",
   environment: (process.env.VANA_ENV as "dev" | "prod") ?? "dev",
 });
