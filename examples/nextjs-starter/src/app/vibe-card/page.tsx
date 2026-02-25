@@ -127,7 +127,7 @@ export default function VibeCardPage() {
       if (prev[serviceId]) return prev;
       return {
         ...prev,
-        [serviceId]: data.data ? (data.data as any)[`${serviceId}.profile`] || data.data : data,
+        [serviceId]: data.data ? (data.data as Record<string, unknown>)[`${serviceId}.profile`] || data.data : data,
       };
     });
   }, []);

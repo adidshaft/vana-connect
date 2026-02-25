@@ -11,3 +11,5 @@ coverage/
 .cursor
 .agents
 .agent
+.vercel
+.env*.local
